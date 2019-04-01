@@ -1,11 +1,8 @@
 import React, { Component } from 'react'
-import axios from 'axios'
-import { Container, Row, Col, Collapse, Table, Button, Modal, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Alert  } from 'reactstrap';
-import { connect } from 'react-redux' 
-import { Link } from 'react-router-dom'
-import { Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle } from 'reactstrap';
+import { Container, Row, Col, Collapse, Table, Button } from 'reactstrap';
+import { Card, CardText, CardBody, CardTitle } from 'reactstrap';
 
-class Departments extends Component {
+class Student extends Component {
 
     state = { openTab:0 }
     render() {
@@ -93,4 +90,4 @@ class Departments extends Component {
     }
 }
 
-export default Departments
+export default Student

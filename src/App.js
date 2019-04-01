@@ -6,6 +6,10 @@ import { withRouter } from 'react-router-dom'
 import Header from './Components/Header'
 import Main from './Components/Main'
 
+import axios from 'axios'
+import { URL } from './Config/env'
+axios.defaults.baseURL = URL 
+
 class App extends Component {
   render() {
       return (

@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
-import axios from 'axios'
-import { Container, Row, Col, Table, Button, Modal, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Alert  } from 'reactstrap';
-import { connect } from 'react-redux' 
+import { Container, Row, Col, Table, Button } from 'reactstrap';
 
-class Departments extends Component {
+class Teacher extends Component {
     render() {
         return (
             <div>
@@ -51,4 +49,4 @@ class Departments extends Component {
     }
 }
 
-export default Departments
+export default Teacher

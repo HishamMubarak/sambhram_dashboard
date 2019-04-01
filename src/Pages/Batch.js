@@ -1,46 +1,148 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import { Container, Row, Col, Table, Button, Modal, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Alert  } from 'reactstrap';
-import { connect } from 'react-redux' 
+import { Container, Row, Col, Table, Button, Card, CardBody, CardText, CardTitle  } from 'reactstrap';
+import CustomModal from '../Components/CustomModal'
 import { Link } from 'react-router-dom'
 
-class Departments extends Component {
+const initialState = {
+    studentName:null, mobile:null, mail:null, address:null, registerNumber:null,
+    showAddStudentForm:false,
+    showEnterAllDataAlert:false
+}
+
+class Batch extends Component {
+
+    state = { batchData:null, students:null, ...initialState }
+
+    componentDidMount() {
+        this.fetchBatchDetailsAndStudents(this.props.match.params.batchId)
+    }
+
+    handleInputChange = (e) => {
+        this.setState({ [e.target.name]:e.target.value })
+    }
+
+    fetchBatchDetailsAndStudents(batchId) {
+        axios.get(`/batch/${batchId}`)
+        .then(res =>  {
+            console.log(res.data)
+            this.setState({ batchData:res.data.batchData[0], students:res.data.students })
+        })
+        .catch(err => console.log(err))
+    }
+
+    addStudent() {
+        const { studentName, mobile, mail, address, registerNumber } = this.state
+        if(studentName && mobile && mail && address && registerNumber) {
+            
+            const department = this.state.batchData.department[0]._id
+            const course = this.state.batchData.course[0]._id
+            const batch = this.state.batchData._id
+            
+            axios.put('/student', {
+                department, course, batch,
+                name:studentName,
+                mobile, mail, address, registerNumber
+            })
+            .then(res => {
+                this.setState((currentState) => {
+                    currentState.students.push(res.data.data)
+                    return { students:currentState.students, ...initialState }
+                })
+            })
+            .catch(err => console.log(err))
+        } else {
+            this.setState({ showEnterAllDataAlert:true })
+        }
+    }
+
+
     render() {
-        return (
-            <div>
-                <Container>
-                    <Row>
-                        <Col>
-                            <Table>
-                                <thead>
-                                    <tr>
-                                        <th>No.</th>
-                                        <th style={{ width:'50%' }}>Name</th>
-                                        <th>Attendance</th>
-                                        <th>Mobile</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>{1}</td>
-                                        <td>Hisham Mubarak</td>
-                                        <td>86%</td>
-                                        <td>9744891011</td>
-                                        <td>
-                                            <Link to="/student" style={{ textDecoration:'none', color:'white' }}>
-                                                <Button color="link">Details</Button>
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </Table>
-                        </Col>
-                    </Row>
-                </Container>
-            </div>
-        )
+        if(this.state.batchData) {
+            return (
+                <>
+                    <CustomModal
+                        isOpen={this.state.showAddStudentForm}
+                        handleInputChange={this.handleInputChange}
+                        fields={
+                            [
+                                { fieldName:"studentName", value:this.state.studentName, placeholder:"Student Name" },
+                                { fieldName:"mobile", value:this.state.mobile, placeholder:"Mobile" },
+                                { fieldName:"mail", value:this.state.mail, placeholder:"E-Mail" },
+                                { fieldName:"address", value:this.state.address, placeholder:"Address" },
+                                { fieldName:"registerNumber", value:this.state.registerNumber, placeholder:"Register Number" }
+                            ]
+                        }
+                        showEnterAllDataAlert={this.state.showEnterAllDataAlert}
+                        onSubmit={ () => this.addStudent() }
+                        onCancel={ () => this.setState({ ...initialState })}
+                    />
+
+                    <Container>
+                        <Row style={{ marginTop:50, marginBottom:50 }}>
+                            <Col>
+                                <Card>
+                                    <CardBody>
+                                        <Row>
+                                            <Col sm="12">
+                                                <CardTitle>Department : {this.state.batchData.department[0].name}</CardTitle>
+                                                <CardText>Course : {this.state.batchData.course[0].name}</CardText>
+                                                <CardText>Batch : {this.state.batchData.name}</CardText>
+                                            </Col>
+                                        </Row>
+                                        <Row style={{ margin:10, marginTop:20 }}>
+                                            <Button color="primary" style={{ margin:10 }}>Edit Detail</Button>
+                                            <Button color="primary" style={{ margin:10 }} onClick={ () => this.setState({ showAddStudentForm:true })}>Add Student</Button>
+                                        </Row>
+                                    </CardBody>
+                                </Card>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                {
+                                    this.state.students && this.state.students.length > 0 && 
+                                    <Table>
+                                        <thead>
+                                            <tr>
+                                                <th>No.</th>
+                                                <th>Name</th>
+                                                <th>Register Numer</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                this.state.students.map((each, index) => {
+                                                    return (
+                                                        <tr key={each._id}>
+                                                            <td>{index+1}</td>
+                                                            <td>{each.name}</td>
+                                                            <td>{each.registerNumber}</td>
+                                                            <td>
+                                                                <Link to="/student" style={{ textDecoration:'none', color:'white' }}>
+                                                                    <Button color="link">Details</Button>
+                                                                </Link>
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                })
+                                            }
+                                        </tbody>
+                                    </Table>
+                                }
+                            </Col>
+                        </Row>
+                    </Container>
+                </>
+            )
+        } else {
+            return (
+                <p style={{ textAlign:'center' }}>Fetching data....</p>
+            )
+        }
+        
     }
 }
 
-export default Departments
+export default Batch
