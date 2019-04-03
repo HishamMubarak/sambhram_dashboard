@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import { Container, Row, Col, Collapse, Card, Table, Button } from 'reactstrap';
 import CustomModal from '../Components/CustomModal'
+import { Link } from 'react-router-dom'
 
 const initialState = {
     deptId:null,
@@ -34,7 +35,7 @@ class Department extends Component {
     addDept() {
         if(this.state.departmentName) {
             axios.put('/department', { name:this.state.departmentName })
-            .then(res => this.setState({ departments: this.state.departments.concat(res.data.data), ...initialState } ))
+            .then(res => this.setState({ departments: this.state.departments.concat(res.data), ...initialState } ))
             .catch(err => {
                 alert("Server error. Please try again later")
                 console.log(err)
@@ -51,12 +52,12 @@ class Department extends Component {
                 let itemIndex = null
                 
                 this.state.departments.forEach((each, index) => {
-                    if(each._id === res.data.data._id) itemIndex = index 
+                    if(each._id === res.data._id) itemIndex = index 
                 });
 
 
                 this.setState((oldState) => {
-                    oldState.departments[itemIndex].name = res.data.data.name
+                    oldState.departments[itemIndex].name = res.data.name
                     return {
                         departments:oldState.departments,
                         ...initialState
@@ -77,7 +78,7 @@ class Department extends Component {
             axios.delete(`/department/${this.state.deptId}`)
             .then(res => {
                 this.setState({
-                    departments:this.state.departments.filter(each => each._id !== res.data.data._id),
+                    departments:this.state.departments.filter(each => each._id !== res.data._id),
                     ...initialState
                 })
             })
@@ -90,15 +91,17 @@ class Department extends Component {
         if(this.state.deptId && this.state.courseName) {
             axios.put('/course', { department:this.state.deptId, name:this.state.courseName })
             .then(res => {
-                console.log(res)
-                
                 let itemIndex = null
                 this.state.departments.forEach((each, index) => {
                     if(each._id === res.data.department) itemIndex = index 
                 });
 
                 this.setState((oldState) => {
-                    oldState.departments[itemIndex].courses.push(res.data)
+                    oldState.departments[itemIndex].courses.length > 0 ? 
+                        oldState.departments[itemIndex].courses.push(res.data)
+                    :
+                        oldState.departments[itemIndex].courses = [res.data]
+
                     return { departments:oldState.departments, ...initialState }
                 })
 
@@ -106,57 +109,6 @@ class Department extends Component {
             .catch(err => console.log(err))
         } else {
             this.setState({ showEnterAllDataAlert:true })
-        }
-    }
-
-    editCourse() {
-        if(this.state.courseName && this.state.courseId) {
-            axios.post(`/course/${this.state.courseId}`, { name:this.state.courseName })
-            .then(res => {
-                let departmentIndex = null
-                this.state.departments.forEach((each, index) => {
-                    if(each._id === res.data.data.department) departmentIndex = index 
-                });
-
-                let courseIndex = null
-                this.state.departments[departmentIndex].courses.forEach((each, index) => {
-                    if(each._id === res.data.data._id) courseIndex = index
-                })
-
-                this.setState((oldState) => {
-                    oldState.departments[departmentIndex].courses[courseIndex].name = res.data.data.name
-                    return { departments:oldState.departments, ...initialState }
-                })
-            })
-            .catch(err => console.log(err))
-        } else {
-            this.setState({ showEnterAllDataAlert:true })
-        }
-    }
-
-    deleteCourse() {
-        if(this.state.courseId) {
-            axios.delete(`/course/${this.state.courseId}`)
-            .then(res => {
-
-                let departmentIndex = null
-                this.state.departments.forEach((each, index) => {
-                    if(each._id === res.data.data.department) departmentIndex = index 
-                });
-
-                let updatedCoursesList = this.state.departments[departmentIndex].courses.filter((each, index) => {
-                    return each._id !== res.data.data._id
-                })
-
-                this.setState((oldState) => {
-                    oldState.departments[departmentIndex].courses = updatedCoursesList
-                    return { departments:oldState.departments, ...initialState }
-                })
-
-            })
-            .catch(err => {
-                console.log(err)
-            })
         }
     }
 
@@ -205,20 +157,7 @@ class Department extends Component {
                     onCancel={ () => this.setState({ ...initialState })}
                 />
 
-                <CustomModal
-                    isOpen={this.state.showEditCourseForm}
-                    handleInputChange={this.handleInputChange}
-                    fields={
-                        [
-                            { fieldName:"courseName", value:this.state.courseName, placeholder:"Course Name"}
-                        ]
-                    }
-                    showDeleteButton={this.state.showEditCourseForm}
-                    showEnterAllDataAlert={this.state.showEnterAllDataAlert}
-                    onSubmit={ () => this.editCourse() }
-                    onDelete={ () => this.deleteCourse() }
-                    onCancel={ () => this.setState({ ...initialState })}
-                />
+                
                 
                 <Container>
                     <Row>
@@ -261,7 +200,10 @@ class Department extends Component {
                                                                                     <td>{courseIndex + 1}</td>
                                                                                     <td>{course.name}</td>
                                                                                     <td>
-                                                                                        <Button color="link" onClick={ () => this.setState({ deptId:each._id, courseId:course._id, courseName:course.name, showEditCourseForm:true }) }>Edit</Button>
+                                                                                    <Link style={{ margin:10, textDecoration: 'none', color: 'white' }} to={`/course/${course._id}`} >
+                                                                                        <Button color="primary">Details</Button>
+                                                                                    </Link>
+                                                                                        {/* <Button color="link" onClick={ () => this.setState({ deptId:each._id, courseId:course._id, courseName:course.name, showEditCourseForm:true }) }>Edit</Button> */}
                                                                                     </td>
                                                                                 </tr>
                                                                             </tbody>

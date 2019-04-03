@@ -1,92 +1,135 @@
 import React, { Component } from 'react'
 import { Container, Row, Col, Collapse, Table, Button } from 'reactstrap';
 import { Card, CardText, CardBody, CardTitle } from 'reactstrap';
+import axios from 'axios'
 
 class Student extends Component {
 
-    state = { openTab:0 }
+    state = { openTab: 0 }
+
+    componentDidMount() {
+        this.fetchStudentDetails(this.props.match.params.studentId)
+    }
+
+    fetchStudentDetails(studentId) {
+        axios.get(`/student/${studentId}`)
+            .then(res => {
+                this.fetchCourseDetails(res.data.course._id)
+                this.setState({ student: res.data })
+            })
+            .catch(err => console.log(err))
+    }
+
+    fetchCourseDetails(courseId) {
+        axios.get(`/course/${courseId}`)
+            .then(res => {
+
+                let course = res.data[0]
+
+                let semesterSubjectArray = {}
+
+                course.subjects.forEach(each => {
+                    if (semesterSubjectArray[each.semester]) {
+                        semesterSubjectArray[each.semester].push(each)
+                    } else {
+                        semesterSubjectArray[each.semester] = [each]
+                    }
+                })
+
+                this.setState({ course, subjects: semesterSubjectArray })
+
+            })
+            .catch(err => console.log(err))
+    }
+
     render() {
-        return (
-            <div>
-                <Container>
-                    <Row style={{ marginTop:50, marginBottom:50 }}>
-                        <Col>
-                            <Card>
-                                <CardBody>
-                                    <Row>
-                                        <Col sm="6">
-                                            <CardTitle>Hisham Mubarak</CardTitle>
-                                            <CardText>15XWSB7040</CardText>
-                                            <CardText>6th Sem, BCA, CS</CardText>
-                                        </Col>
-                                        <Col sm="6">
-                                            <CardText>9744891011</CardText>
-                                            <CardText>Malappuram, Kerala</CardText>
-                                            <CardText>parengalhisham@gmail.com</CardText>
-                                        </Col>
-                                    </Row>
-                                    <Row style={{ margin:10, marginTop:20 }}>
-                                        <Button color="primary">Edit Detail</Button>
-                                    </Row>
-                                </CardBody>
-                            </Card>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col sm="12">
-                            <Button onClick={ () => this.setState(this.state.openTab === 0 ? { openTab:-1 } :  { openTab:0 }) } size="lg" outline color="primary" block>Semester 6</Button>
-                            <Collapse isOpen={0 === this.state.openTab}>
+        const { student } = this.state
+
+        if (this.state.student) {
+            return (
+                <div>
+                    <Container>
+                        <Row style={{ marginTop: 50, marginBottom: 50 }}>
+                            <Col>
                                 <Card>
-                                    <Row>
-                                        <Col>
-                                            <Button color="link" onClick={ () => console.log("Implement Edit Form") }>Edit</Button>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <Table>
-                                                <thead>
-                                                    <tr>
-                                                        <th>No.</th>
-                                                        <th>Subject</th>
-                                                        <th>Internal 1 (50)</th>
-                                                        <th>Internal 2 (50)</th>
-                                                        <th>Theory</th>
-                                                        <th>Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>{1}</td>
-                                                        <td>Cryptography & Network Security</td>
-                                                        <td>25</td>
-                                                        <td>35</td>
-                                                        <td>57</td>
-                                                        <td>
-                                                            <Button color="link" onClick={ () => console.log("Implement Edit Form") }>Edit</Button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>{1}</td>
-                                                        <td>Cryptography & Network Security</td>
-                                                        <td>25</td>
-                                                        <td>35</td>
-                                                        <td>57</td>
-                                                        <td>
-                                                            <Button color="link" onClick={ () => console.log("Implement Edit Form") }>Edit</Button>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </Table>
-                                        </Col>
-                                    </Row>
+                                    <CardBody>
+                                        <Row>
+                                            <Col sm="6">
+                                                <CardTitle>{student.name}</CardTitle>
+                                                <CardText>{student.registerNumber}</CardText>
+                                                <CardText>{student.course.name}</CardText>
+                                                <CardText>{student.batch.name} {student.course.name}</CardText>
+                                            </Col>
+                                            <Col sm="6">
+                                                <CardText>{student.mobile}</CardText>
+                                                <CardText>{student.address}</CardText>
+                                                <CardText>{student.mail}</CardText>
+                                            </Col>
+                                        </Row>
+                                        <Row style={{ margin: 10, marginTop: 20 }}>
+                                            <Button color="primary">Edit Detail</Button>
+                                        </Row>
+                                    </CardBody>
                                 </Card>
-                            </Collapse>
-                        </Col>
-                    </Row>
-                </Container>
-            </div>
-        )
+                            </Col>
+                        </Row>
+                        <Row>
+                            {
+                                this.state.subjects && Object.keys(this.state.subjects).length > 0 &&
+                                Object.keys(this.state.subjects).map((key, index) => {
+                                    const subjects = this.state.subjects[key]
+                                    return (
+                                        <Col sm="12" key={key}>
+                                            <Button onClick={() => this.setState(this.state.openTab === index ? { openTab: -1 } : { openTab: index })}
+                                                size="lg" outline color="primary" block>Semester : {key}</Button>
+
+                                            <Collapse isOpen={this.state.openTab === index}>
+                                                <Card>
+                                                    <Row>
+                                                        {
+                                                            subjects && subjects.length > 0 &&
+                                                            <Col>
+                                                                <Table>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>No</th>
+                                                                            <th>Subject Name</th>
+                                                                            <th>Actions</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {
+                                                                            subjects.map((each, index) => {
+                                                                                return (
+                                                                                    <tr key={each._id}>
+                                                                                        <td>{index + 1}</td>
+                                                                                        <td>{each.name}</td>
+                                                                                        <td>
+                                                                                            <Button color="primary" onClick={() => this.setState({ subjectName: each.name, subjectId: each._id, subjectSemester: key, showEditSubjectForm: true })}>Edit</Button>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                )
+                                                                            })
+                                                                        }
+
+                                                                    </tbody>
+                                                                </Table>
+                                                            </Col>
+                                                        }
+                                                    </Row>
+                                                </Card>
+                                            </Collapse>
+                                        </Col>
+                                    )
+                                })
+                            }
+                        </Row>
+                    </Container>
+                </div>
+            )
+        } else {
+            return <p>Loading</p>
+        }
     }
 }
 

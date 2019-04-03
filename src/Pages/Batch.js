@@ -46,7 +46,7 @@ class Batch extends Component {
             })
             .then(res => {
                 this.setState((currentState) => {
-                    currentState.students.push(res.data.data)
+                    currentState.students.push(res.data)
                     return { students:currentState.students, ...initialState }
                 })
             })
@@ -91,7 +91,6 @@ class Batch extends Component {
                                             </Col>
                                         </Row>
                                         <Row style={{ margin:10, marginTop:20 }}>
-                                            <Button color="primary" style={{ margin:10 }}>Edit Detail</Button>
                                             <Button color="primary" style={{ margin:10 }} onClick={ () => this.setState({ showAddStudentForm:true })}>Add Student</Button>
                                         </Row>
                                     </CardBody>
@@ -120,7 +119,7 @@ class Batch extends Component {
                                                             <td>{each.name}</td>
                                                             <td>{each.registerNumber}</td>
                                                             <td>
-                                                                <Link to="/student" style={{ textDecoration:'none', color:'white' }}>
+                                                                <Link to={`/student/${each._id}`} style={{ textDecoration:'none', color:'white' }}>
                                                                     <Button color="link">Details</Button>
                                                                 </Link>
                                                             </td>

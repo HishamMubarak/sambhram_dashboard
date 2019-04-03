@@ -11,7 +11,7 @@ const CustomModal = (props) => {
                             return (
                                 <FormGroup key={each.fieldName}>
                                     <Label for={each.fieldName}>Enter {each.placeholder}</Label>
-                                    <Input type="text" name={each.fieldName} onChange={props.handleInputChange} value={each.value || ''} />
+                                    <Input type={each.type || "text"} name={each.fieldName} onChange={props.handleInputChange} value={each.value || ''} />
                                 </FormGroup>
                             )
                         })
