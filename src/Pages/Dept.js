@@ -11,7 +11,7 @@ const initialState = {
     showEditDeptForm:false,
     showEnterAllDataAlert:false,
     showAddCourseForm:false,
-    showEditCourseForm:false
+    showEditCourseForm:false,
 }
 
 class Department extends Component {
@@ -49,20 +49,20 @@ class Department extends Component {
         if(this.state.departmentName) {
             axios.post(`/department/${this.state.deptId}`, { name:this.state.departmentName })
             .then(res =>  {
-                let itemIndex = null
+                // let itemIndex = null
                 
-                this.state.departments.forEach((each, index) => {
-                    if(each._id === res.data._id) itemIndex = index 
-                });
-
-
-                this.setState((oldState) => {
-                    oldState.departments[itemIndex].name = res.data.name
-                    return {
-                        departments:oldState.departments,
-                        ...initialState
-                    }
-                })
+                // this.state.departments.forEach((each, index) => {
+                //     if(each._id === res.data._id) itemIndex = index 
+                // });
+                this.fetchDepartments()
+                this.setState({ ...initialState })
+                // this.setState((oldState) => {
+                //     oldState.departments[itemIndex].name = res.data.name
+                //     return {
+                //         departments:oldState.departments,
+                //         ...initialState
+                //     }
+                // })
             })
             .catch(err => {
                 alert("Server error. Please try again later")
@@ -91,19 +91,21 @@ class Department extends Component {
         if(this.state.deptId && this.state.courseName) {
             axios.put('/course', { department:this.state.deptId, name:this.state.courseName })
             .then(res => {
-                let itemIndex = null
-                this.state.departments.forEach((each, index) => {
-                    if(each._id === res.data.department) itemIndex = index 
-                });
+                this.fetchDepartments()
+                this.setState({ ...initialState})
+                // let itemIndex = null
+                // this.state.departments.forEach((each, index) => {
+                //     if(each._id === res.data.department) itemIndex = index 
+                // });
 
-                this.setState((oldState) => {
-                    oldState.departments[itemIndex].courses.length > 0 ? 
-                        oldState.departments[itemIndex].courses.push(res.data)
-                    :
-                        oldState.departments[itemIndex].courses = [res.data]
+                // this.setState((oldState) => {
+                //     oldState.departments[itemIndex].courses.length > 0 ? 
+                //         oldState.departments[itemIndex].courses.push(res.data)
+                //     :
+                //         oldState.departments[itemIndex].courses = [res.data]
 
-                    return { departments:oldState.departments, ...initialState }
-                })
+                //     return { departments:oldState.departments, ...initialState }
+                // })
 
             })
             .catch(err => console.log(err))

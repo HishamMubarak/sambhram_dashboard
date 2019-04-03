@@ -52,7 +52,7 @@ class Course extends Component {
       axios.post(`/course/${this.state.courseId}`, { name: this.state.courseName })
         .then(res => {
           this.fetchCourseDetails(this.props.match.params.courseId)
-          console.log(res)
+          this.setState({ ...initialState })
           // let departmentIndex = null
           // this.state.departments.forEach((each, index) => {
           //   if (each._id === res.data.department) departmentIndex = index

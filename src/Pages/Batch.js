@@ -25,7 +25,6 @@ class Batch extends Component {
     fetchBatchDetailsAndStudents(batchId) {
         axios.get(`/batch/${batchId}`)
         .then(res =>  {
-            console.log(res.data)
             this.setState({ batchData:res.data.batchData[0], students:res.data.students })
         })
         .catch(err => console.log(err))

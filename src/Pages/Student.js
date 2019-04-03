@@ -2,30 +2,39 @@ import React, { Component } from 'react'
 import { Container, Row, Col, Collapse, Table, Button } from 'reactstrap';
 import { Card, CardText, CardBody, CardTitle } from 'reactstrap';
 import axios from 'axios'
+import CustomModal from '../Components/CustomModal'
+
+const initialState = {
+    showEditSubjectForm: false,
+    showEnterAllDataAlert: false
+}
 
 class Student extends Component {
 
-    state = { openTab: 0 }
+    state = { openTab: 0, ...initialState }
 
     componentDidMount() {
         this.fetchStudentDetails(this.props.match.params.studentId)
     }
 
+    handleInputChange = (e) => {
+        this.setState({ [e.target.name]: e.target.value })
+    }
+
     fetchStudentDetails(studentId) {
         axios.get(`/student/${studentId}`)
             .then(res => {
-                this.fetchCourseDetails(res.data.course._id)
+                this.fetchCourseDetails(res.data.course._id, res.data)
                 this.setState({ student: res.data })
             })
             .catch(err => console.log(err))
     }
 
-    fetchCourseDetails(courseId) {
+    fetchCourseDetails(courseId, student) {
         axios.get(`/course/${courseId}`)
             .then(res => {
 
                 let course = res.data[0]
-
                 let semesterSubjectArray = {}
 
                 course.subjects.forEach(each => {
@@ -36,10 +45,52 @@ class Student extends Component {
                     }
                 })
 
-                this.setState({ course, subjects: semesterSubjectArray })
+                this.setState({ course })
+
+                this.combineSubjectAndStudent(semesterSubjectArray, student)
 
             })
             .catch(err => console.log(err))
+    }
+
+    combineSubjectAndStudent(semesterSubjectArray, student) {
+
+        if (!student.subjectData) { student.subjectData = [] }
+        const { subjectData } = student
+
+        Object.keys(semesterSubjectArray).map((semNumber, index) => {
+            return semesterSubjectArray[semNumber].map((eachSubject, innerIndex) => {
+                let foundItem = subjectData.filter(each => each.subjectId === eachSubject._id)
+                if (foundItem.length > 0) {
+                    return semesterSubjectArray[semNumber][innerIndex].subjectData = foundItem[0]
+                } else {
+                    return semesterSubjectArray[semNumber][innerIndex].subjectData = {
+                        subjectId: eachSubject._id,
+                        firstInternal: null,
+                        secondInternal: null,
+                        attendacePercentage: null
+                    }
+                }
+            })
+        })
+
+        this.setState({ subjects: semesterSubjectArray })
+    }
+
+    editSubjectDetails() {
+        const { editingSubjectId, firstInternal, secondInternal, attendancePercentage } = this.state
+        if (editingSubjectId && firstInternal && secondInternal && attendancePercentage) {
+            axios.post(`/student/${this.props.match.params.studentId}/updateSubjectData`, {
+                editingSubjectId, firstInternal, secondInternal, attendancePercentage
+            })
+                .then(res => {
+                    this.fetchStudentDetails(this.props.match.params.studentId)
+                    this.setState({ ...initialState })
+                })
+                .catch(err => console.log(err))
+        } else {
+            this.setState({ showEnterAllDataAlert: true })
+        }
     }
 
     render() {
@@ -48,6 +99,21 @@ class Student extends Component {
         if (this.state.student) {
             return (
                 <div>
+                    <CustomModal
+                        isOpen={this.state.showEditSubjectForm}
+                        handleInputChange={this.handleInputChange}
+                        fields={
+                            [
+                                { fieldName: "firstInternal", value: this.state.firstInternal, placeholder: "First Internal Marks", type: "number" },
+                                { fieldName: "secondInternal", value: this.state.secondInternal, placeholder: "Second Internal Marks", type: "number" },
+                                { fieldName: "attendancePercentage", value: this.state.attendancePercentage, placeholder: "Attendance Percentage", type: "number" }
+                            ]
+                        }
+                        showEnterAllDataAlert={this.state.showEnterAllDataAlert}
+                        onSubmit={() => this.editSubjectDetails()}
+                        onCancel={() => this.setState({ ...initialState })}
+                    />
+
                     <Container>
                         <Row style={{ marginTop: 50, marginBottom: 50 }}>
                             <Col>
@@ -94,18 +160,31 @@ class Student extends Component {
                                                                         <tr>
                                                                             <th>No</th>
                                                                             <th>Subject Name</th>
+                                                                            <th>1st Internal</th>
+                                                                            <th>2nd Internal</th>
+                                                                            <th>Attendance</th>
                                                                             <th>Actions</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         {
                                                                             subjects.map((each, index) => {
+                                                                                // console.log(each)
                                                                                 return (
                                                                                     <tr key={each._id}>
                                                                                         <td>{index + 1}</td>
                                                                                         <td>{each.name}</td>
+                                                                                        <td>{each.subjectData.firstInternal || 'NA'}</td>
+                                                                                        <td>{each.subjectData.secondInternal || 'NA'}</td>
+                                                                                        <td>{each.subjectData.attendancePercentage || 'NA'}</td>
                                                                                         <td>
-                                                                                            <Button color="primary" onClick={() => this.setState({ subjectName: each.name, subjectId: each._id, subjectSemester: key, showEditSubjectForm: true })}>Edit</Button>
+                                                                                            <Button color="primary" onClick={() => this.setState({
+                                                                                                editingSubjectId: each._id,
+                                                                                                firstInternal: each.subjectData.firstInternal,
+                                                                                                secondInternal: each.subjectData.secondInternal,
+                                                                                                attendancePercentage: each.subjectData.attendancePercentage,
+                                                                                                showEditSubjectForm: true
+                                                                                            })}>Edit</Button>
                                                                                         </td>
                                                                                     </tr>
                                                                                 )

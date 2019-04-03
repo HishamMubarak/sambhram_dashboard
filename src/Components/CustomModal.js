@@ -16,6 +16,23 @@ const CustomModal = (props) => {
                             )
                         })
                     }
+                    {
+                        props.selectFields && props.selectFields.map(eachSelect => {
+                            return (
+                                <FormGroup key={eachSelect.fieldName}>
+                                    <Label for={eachSelect.fieldName}>Select</Label>
+                                    <Input value={eachSelect.value} type="select" name={eachSelect.fieldName} id={eachSelect.fieldName} onChange={props.handleInputChange}>
+                                        {
+                                            eachSelect.data.map((each) => {
+                                                return (<option key={each._id} value={each._id}>{each.name}</option>)
+                                            })
+                                        }
+                                    </Input>
+                                </FormGroup>
+                            )
+                        })
+
+                    }
                 </Form>
             </ModalBody>
             <ModalFooter>
@@ -28,7 +45,7 @@ const CustomModal = (props) => {
                     <Row>
                         <Col>
                             <Button color="primary" block onClick={props.onSubmit}>Submit</Button>
-                            { props.showDeleteButton && <Button color="danger" block onClick={props.onDelete}>Delete</Button> }
+                            {props.showDeleteButton && <Button color="danger" block onClick={props.onDelete}>Delete</Button>}
                             <Button color="secondary" block onClick={props.onCancel}>Cancel</Button>
                         </Col>
                     </Row>
