@@ -1,6 +1,6 @@
 import { LOGIN, LOGOUT } from '../types'
 
-export const Login = (userData) => {
+export const login = (userData) => {
     return {
         type:LOGIN,
         payload:userData

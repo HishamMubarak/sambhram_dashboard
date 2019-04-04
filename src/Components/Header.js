@@ -15,7 +15,6 @@ class Header extends Component {
 
     handleLogout() {
         this.props.logout()
-        window.location.href = "/";
     }
 
     toggle() { this.setState({ isOpen:!this.state.isOpen }) }

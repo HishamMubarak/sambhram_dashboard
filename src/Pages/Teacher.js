@@ -36,9 +36,9 @@ class Teacher extends Component {
     }
 
     addTeacher() {
-        const { teacherName, teacherDepartment } = this.state
-        if (teacherName && teacherDepartment && teacherDepartment !== '1') {
-            axios.put('/teacher', { name: teacherName, department: teacherDepartment })
+        const { teacherName, teacherEmail, teacherPassword, teacherDepartment } = this.state
+        if (teacherName && teacherEmail && teacherPassword && teacherDepartment && teacherDepartment !== '1') {
+            axios.put('/teacher', { name: teacherName, email:teacherEmail, password:teacherPassword, department: teacherDepartment })
                 .then(res => {
                     this.getTeachers()
                     this.setState({ ...initialState })
@@ -50,9 +50,9 @@ class Teacher extends Component {
     }
 
     editTeacher() {
-        const { teacherId, teacherName, teacherDepartment } = this.state
-        if (teacherId && teacherName && teacherDepartment && teacherDepartment !== '1') {
-            axios.post(`/teacher/${teacherId}`, { name: teacherName, department: teacherDepartment })
+        const { teacherId, teacherName, teacherEmail, teacherDepartment } = this.state
+        if (teacherId && teacherName && teacherEmail && teacherDepartment && teacherDepartment !== '1') {
+            axios.post(`/teacher/${teacherId}`, { name: teacherName, teacherEmail:teacherEmail, department: teacherDepartment })
                 .then(res => {
                     this.setState({ ...initialState })
                     this.getTeachers()
@@ -75,6 +75,8 @@ class Teacher extends Component {
                         fields={
                             [
                                 { fieldName: "teacherName", value: this.state.teacherName, placeholder: "Name" },
+                                { fieldName: "teacherEmail", value: this.state.teacherEmail, placeholder: "Email" },
+                                { fieldName: "teacherPassword", value: this.state.teacherPassword, placeholder: "Password", type:"password" },
                             ]
                         }
                         selectFields={
@@ -101,6 +103,7 @@ class Teacher extends Component {
                         fields={
                             [
                                 { fieldName: "teacherName", value: this.state.teacherName, placeholder: "Name" },
+                                { fieldName: "teacherEmail", value: this.state.teacherEmail, placeholder: "Email" },
                             ]
                         }
                         selectFields={
@@ -133,6 +136,7 @@ class Teacher extends Component {
                                         <tr>
                                             <th>No.</th>
                                             <th>Name</th>
+                                            <th>Email</th>
                                             <th>Department</th>
                                             <th>Actions</th>
                                         </tr>
@@ -144,9 +148,10 @@ class Teacher extends Component {
                                                     <tr key={teacher._id}>
                                                         <td>{index + 1}</td>
                                                         <td>{teacher.name}</td>
+                                                        <td>{teacher.email}</td>
                                                         <td>{teacher.department.name}</td>
                                                         <td>
-                                                            <Button color="link" onClick={() => this.setState({ teacherName: teacher.name, teacherDepartment: teacher.department._id, teacherId: teacher._id, showEditTeacherForm: true })}>Edit</Button>
+                                                            <Button color="link" onClick={() => this.setState({ teacherName: teacher.name, teacherEmail:teacher.email, teacherDepartment: teacher.department._id, teacherId: teacher._id, showEditTeacherForm: true })}>Edit</Button>
                                                         </td>
                                                     </tr>
                                                 )
