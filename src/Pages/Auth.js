@@ -38,7 +38,11 @@ class Auth extends Component {
             .then(res => { this.props.login(res.data) })
             .catch(err => console.log(err))
         } else {
-            this.setState({ showEnterAllDataAlert:true })
+            this.setState({ showEnterAllDataAlert:true }, () => {
+                setTimeout(() => {
+                    this.setState({ showEnterAllDataAlert:false })
+                }, 3000)
+            })
         }
     }
 
