@@ -10,7 +10,11 @@ const initialState = {
     batchName: null,
     showAddBatchModal: false,
     showEditBatchModal: false,
-    showEnterAllDataAlert: false
+    showEnterAllDataAlert: false,
+    notificationTitle: null,
+    notificationText: null,
+    showNotificationModal: false,
+    departmentId: null
 }
 
 class Home extends Component {
@@ -19,6 +23,25 @@ class Home extends Component {
 
     componentDidMount() {
         this.fetchCourses()
+    }
+
+    sendCollegeNotification() {
+        const { notificationText, notificationTitle } = this.state
+        if (notificationText && notificationTitle) {
+            let sendData = {
+                title: notificationTitle,
+                description: notificationText
+            }
+
+            // eslint-disable-next-line no-unused-expressions
+            this.state.departmentId ? sendData.departmentId = this.state.departmentId : null
+
+            axios.post('/notification', sendData)
+                .then(res => this.setState({ ...initialState }))
+                .catch(err => console.log(err))
+        } else {
+            this.setState({ showEnterAllDataAlert: true })
+        }
     }
 
     fetchCourses() {
@@ -105,12 +128,33 @@ class Home extends Component {
                         onCancel={() => this.setState({ ...initialState })}
                     />
 
+                    <CustomModal
+                        isOpen={this.state.showNotificationModal}
+                        handleInputChange={this.handleInputChange}
+                        fields={
+                            [
+                                { fieldName: "notificationTitle", value: this.state.notificationTitle, placeholder: "Batch Name" },
+                                { fieldName: "notificationText", value: this.state.notificationText, placeholder: "Batch Name" }
+                            ]
+                        }
+                        showEnterAllDataAlert={this.state.showEnterAllDataAlert}
+                        onSubmit={() => this.sendCollegeNotification()}
+                        onCancel={() => this.setState({ ...initialState })}
+                    />
+
+                    <Button
+                        color="primary"
+                        onClick={() => this.setState({ showNotificationModal: true })}>
+                        Send College Notification
+                    </Button>
+
                     {
                         this.state.department &&
                         <React.Fragment>
                             <Row>
                                 <Col>
                                     <h2 style={{ textAlign: 'center' }}>{this.state.department[0].name}</h2>
+                                    <Button style={{ margin: 10 }} color="primary" onClick={() => this.setState({ showNotificationModal: true, departmentId: this.state.department[0]._id })}>Send Department Notification</Button>
                                 </Col>
                             </Row>
 
@@ -122,18 +166,19 @@ class Home extends Component {
                                             {
                                                 each.courses.hasOwnProperty("name") ?
                                                     <Col sm="12">
-                                                        <Row style={{ margin: 10 }}>
-                                                            <Col sm="9">
+                                                        <Row>
+                                                            <Col sm="6">
                                                                 <h3>{each.courses.name}</h3>
                                                             </Col>
-                                                            <Col sm="3">
-                                                                <Button color="primary" block onClick={() => this.setState({ courseId: each.courses._id, showAddBatchModal: true })}>Add New Batch</Button>
+                                                            <Col sm="6">
+                                                                <Button style={{ margin: 10 }} color="primary" onClick={() => this.setState({ courseId: each.courses._id, showAddBatchModal: true })}>Add New Batch</Button>
+
                                                             </Col>
                                                         </Row>
                                                     </Col>
-                                                :
+                                                    :
                                                     <Col sm="12">
-                                                        <h3 style={{ textAlign:'center' }}>Create a course in Department</h3>
+                                                        <h3 style={{ textAlign: 'center' }}>Create a course in Department</h3>
                                                     </Col>
                                             }
 
