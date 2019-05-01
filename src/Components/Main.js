@@ -7,6 +7,7 @@ import Course from '../Pages/Course'
 import Batch from '../Pages/Batch'
 import Teacher from '../Pages/Teacher'
 import Student from '../Pages/Student'
+import Notifications from '../Pages/Notifications'
 
 const Main = () => {
     return(
@@ -18,6 +19,7 @@ const Main = () => {
                 <Route path="/batch/:batchId" exact component={Batch} />
                 <Route path='/student/:studentId' exact component={Student} />
                 <Route path='/teacher' exact component={Teacher} />
+                <Route path='/notifications' exact component={Notifications} />
             </Switch>
         </React.Fragment>
     )

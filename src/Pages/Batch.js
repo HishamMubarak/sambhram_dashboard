@@ -25,7 +25,7 @@ class Batch extends Component {
         this.setState({ [e.target.name]: e.target.value })
     }
 
-    sendCollegeNotification() {
+    sendBatchNotification() {
         const { notificationText, notificationTitle } = this.state
         if (notificationText && notificationTitle) {
             axios.post('/notification', {
@@ -100,12 +100,12 @@ class Batch extends Component {
                         handleInputChange={this.handleInputChange}
                         fields={
                             [
-                                { fieldName: "notificationTitle", value: this.state.notificationTitle, placeholder: "Batch Name" },
-                                { fieldName: "notificationText", value: this.state.notificationText, placeholder: "Batch Name" }
+                                { fieldName: "notificationTitle", value: this.state.notificationTitle, placeholder: "Notification Title" },
+                                { fieldName: "notificationText", value: this.state.notificationText, placeholder: "Notification Body" }
                             ]
                         }
                         showEnterAllDataAlert={this.state.showEnterAllDataAlert}
-                        onSubmit={() => this.sendCollegeNotification()}
+                        onSubmit={() => this.sendBatchNotification()}
                         onCancel={() => this.setState({ ...initialState })}
                     />
 
@@ -123,7 +123,7 @@ class Batch extends Component {
                                         </Row>
                                         <Row style={{ margin: 10, marginTop: 20 }}>
                                             <Button color="primary" style={{ margin: 10 }} onClick={() => this.setState({ showAddStudentForm: true })}>Add Student</Button>
-                                            <Button color="primary" style={{ margin: 10 }} onClick={() => this.setState({ showNotificationModal: true })}>Send College Notification</Button>
+                                            <Button color="primary" style={{ margin: 10 }} onClick={() => this.setState({ showNotificationModal: true })}>Send Batch Notification</Button>
                                         </Row>
                                     </CardBody>
                                 </Card>

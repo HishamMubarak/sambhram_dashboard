@@ -3,6 +3,7 @@ import { Container, Row, Col, Button } from 'reactstrap';
 import { Card, CardBody, CardTitle } from 'reactstrap';
 import { Link } from 'react-router-dom'
 import axios from 'axios'
+import { connect } from 'react-redux'
 import CustomModal from '../Components/CustomModal'
 
 const initialState = {
@@ -45,7 +46,7 @@ class Home extends Component {
     }
 
     fetchCourses() {
-        axios.get(`/department/${"5ca04efdc753b32d1bf90d18"}`)
+        axios.get(`/department/${this.props.auth.department}`)
             .then(res => {
                 this.setState({ department: res.data })
             })
@@ -133,20 +134,14 @@ class Home extends Component {
                         handleInputChange={this.handleInputChange}
                         fields={
                             [
-                                { fieldName: "notificationTitle", value: this.state.notificationTitle, placeholder: "Batch Name" },
-                                { fieldName: "notificationText", value: this.state.notificationText, placeholder: "Batch Name" }
+                                { fieldName: "notificationTitle", value: this.state.notificationTitle, placeholder: "Notification Title" },
+                                { fieldName: "notificationText", value: this.state.notificationText, placeholder: "Notification Body" }
                             ]
                         }
                         showEnterAllDataAlert={this.state.showEnterAllDataAlert}
                         onSubmit={() => this.sendCollegeNotification()}
                         onCancel={() => this.setState({ ...initialState })}
                     />
-
-                    <Button
-                        color="primary"
-                        onClick={() => this.setState({ showNotificationModal: true })}>
-                        Send College Notification
-                    </Button>
 
                     {
                         this.state.department &&
@@ -211,4 +206,10 @@ class Home extends Component {
     }
 }
 
-export default Home
+const mapStateToProps = state => {
+    return {
+        auth: state.auth
+    }
+}
+
+export default connect(mapStateToProps)(Home)

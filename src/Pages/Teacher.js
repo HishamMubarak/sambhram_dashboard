@@ -63,6 +63,19 @@ class Teacher extends Component {
         }
     }
 
+    deleteTeacher() {
+        const { teacherId } = this.state
+        if(teacherId) {
+            axios.delete(`/teacher/${teacherId}`)
+            .then(res => {
+                this.getTeachers()
+                this.setState({ ...initialState })
+            })
+        } else {
+            alert("Error occurred")
+        }
+    }
+
     render() {
         return (
             <div>
@@ -116,6 +129,8 @@ class Teacher extends Component {
                             ]
                         }
                         showEnterAllDataAlert={this.state.showEnterAllDataAlert}
+                        showDeleteButton={this.state.showEditTeacherForm}
+                        onDelete={() => this.deleteTeacher()}
                         onSubmit={() => this.editTeacher()}
                         onCancel={() => this.setState({ ...initialState })}
                     />

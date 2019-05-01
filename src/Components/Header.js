@@ -30,12 +30,21 @@ class Header extends Component {
                             <NavItem>
                                 <NavLink tag={Link} to="/" >Home</NavLink>
                             </NavItem>
-                            <NavItem>
-                                <NavLink tag={Link} to="/dept" >Departments</NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink tag={Link} to="/teacher" >Teacher</NavLink>
-                            </NavItem>
+                            {
+                                this.props.roleId === 2 && 
+                                <> <NavItem>
+                                    <NavLink tag={Link} to="/dept" >Departments</NavLink>
+                                </NavItem>
+                                
+                                <NavItem>
+                                    <NavLink tag={Link} to="/teacher" >Teacher</NavLink>
+                                </NavItem>
+
+                                <NavItem>
+                                    <NavLink tag={Link} to="/notifications" >Notifications</NavLink>
+                                </NavItem>
+                                </>
+                            }
                             <NavItem onClick={this.handleLogout}>
                                 <NavLink>Logout</NavLink>
                             </NavItem>
@@ -47,4 +56,10 @@ class Header extends Component {
     }
 }
 
-export default connect(null, { logout })(Header)
+const mapStateToProps = state => {
+    return {
+        roleId:state.auth.roleId
+    }
+}
+
+export default connect(mapStateToProps, { logout })(Header)

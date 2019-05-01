@@ -5,8 +5,9 @@ import axios from 'axios'
 import CustomModal from '../Components/CustomModal'
 
 const initialState = {
+    showEditStudentForm:false,
     showEditSubjectForm: false,
-    showEnterAllDataAlert: false
+    showEnterAllDataAlert: false,
 }
 
 class Student extends Component {
@@ -93,12 +94,60 @@ class Student extends Component {
         }
     }
 
+    editStudentDetails() {
+        const { studentId, studentName, mobile, mail, address, registerNumber } = this.state
+        if(studentId && studentName && mobile && mail && address && registerNumber) {
+            axios.post(`/student/${studentId}`, { name:studentName, mobile, mail, address, registerNumber })
+            .then(res => {
+                this.fetchStudentDetails(this.props.match.params.studentId)
+                this.setState({ ...initialState })
+            })
+            .catch(err => console.log(err))
+        } else {
+            this.setState({ showEnterAllDataAlert:true })
+        }
+    }
+
+    deleteStudent() {
+        const { studentId } = this.state
+        if(studentId) {
+            axios.delete(`/student/${studentId}`)
+            .then(res => {
+                this.props.history.goBack()
+                this.setState({ ...initialState })
+            })
+            .catch(err => console.log(err))
+        } else {
+            alert("Error occurred")
+        }
+    }
+
     render() {
         const { student } = this.state
 
         if (this.state.student) {
             return (
                 <div>
+
+                    <CustomModal
+                        isOpen={this.state.showEditStudentForm}
+                        handleInputChange={this.handleInputChange}
+                        fields={
+                            [
+                                { fieldName: "studentName", value: this.state.studentName, placeholder: "Student Name" },
+                                { fieldName: "mobile", value: this.state.mobile, placeholder: "Mobile" },
+                                { fieldName: "mail", value: this.state.mail, placeholder: "E-Mail" },
+                                { fieldName: "address", value: this.state.address, placeholder: "Address" },
+                                { fieldName: "registerNumber", value: this.state.registerNumber, placeholder: "Register Number" }
+                            ]
+                        }
+                        showEnterAllDataAlert={this.state.showEnterAllDataAlert}
+                        onSubmit={() => this.editStudentDetails()}
+                        showDeleteButton={this.state.showEditStudentForm}
+                        onDelete={() => this.deleteStudent() }
+                        onCancel={() => this.setState({ ...initialState })}
+                    />
+
                     <CustomModal
                         isOpen={this.state.showEditSubjectForm}
                         handleInputChange={this.handleInputChange}
@@ -133,7 +182,16 @@ class Student extends Component {
                                             </Col>
                                         </Row>
                                         <Row style={{ margin: 10, marginTop: 20 }}>
-                                            <Button color="primary">Edit Detail</Button>
+                                            <Button color="primary" onClick={ () => {
+                                                this.setState({
+                                                    studentId:student._id,
+                                                    studentName:student.name,
+                                                    mobile:student.mobile,
+                                                    mail:student.mail,
+                                                    address:student.address,
+                                                    registerNumber:student.registerNumber
+                                                }, () => this.setState({ showEditStudentForm:true }))
+                                            }}>Edit Detail</Button>
                                         </Row>
                                     </CardBody>
                                 </Card>

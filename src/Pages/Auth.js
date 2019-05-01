@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { login } from '../redux/actions'
 
 const initialState = {
-    showEnterAllDataAlert:false
+    showEnterAllDataAlert: false
 }
 
 class Auth extends Component {
@@ -13,12 +13,7 @@ class Auth extends Component {
     constructor(props) {
         super(props);
         this.toggle = this.toggle.bind(this);
-        this.state = {
-            ...initialState,
-            activeTab: '1',
-            email: "parengalhisham@gmail.com",
-            password: "Hisham123"
-        };
+        this.state = { ...initialState, activeTab: '1', email: "", password: "" };
     }
 
     handleInputChange = (e) => {
@@ -33,14 +28,14 @@ class Auth extends Component {
 
     handleLogin() {
         const { email, password } = this.state
-        if(email && password) {
+        if (email && password) {
             axios.post('/teacher/login', { email, password })
-            .then(res => { this.props.login(res.data) })
-            .catch(err => console.log(err))
+                .then(res => { this.props.login(res.data) })
+                .catch(err => console.log(err))
         } else {
-            this.setState({ showEnterAllDataAlert:true }, () => {
+            this.setState({ showEnterAllDataAlert: true }, () => {
                 setTimeout(() => {
-                    this.setState({ showEnterAllDataAlert:false })
+                    this.setState({ showEnterAllDataAlert: false })
                 }, 3000)
             })
         }
@@ -55,7 +50,7 @@ class Auth extends Component {
                             <Row>
                                 <Col sm="12">
                                     <Form>
-                                        <h3 style={{ textAlign:'center', marginBottom:'50px' }}>Login</h3>
+                                        <h3 style={{ textAlign: 'center', marginBottom: '50px' }}>Login</h3>
                                         <FormGroup>
                                             <Input
                                                 type="email"
@@ -81,9 +76,9 @@ class Auth extends Component {
                                 </Col>
                             </Row>
                             <Row>
-                            <Col style={{ marginTop:'20px' }}>
-                                <Alert isOpen={this.state.showEnterAllDataAlert} color="danger">Enter all data before submitting</Alert>
-                            </Col>
+                                <Col style={{ marginTop: '20px' }}>
+                                    <Alert isOpen={this.state.showEnterAllDataAlert} color="danger">Enter all data before submitting</Alert>
+                                </Col>
                             </Row>
                         </Col>
                     </Row>

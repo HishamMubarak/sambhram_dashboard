@@ -8,11 +8,11 @@ import Auth from './Pages/Auth'
 
 import axios from 'axios'
 import { URL } from './Config/env'
-axios.defaults.baseURL = URL 
+axios.defaults.baseURL = URL
 
 class App extends Component {
   render() {
-    if(this.props.auth._id) {
+    if (this.props.auth._id) {
       return (
         <React.Fragment>
           <Header />
@@ -27,7 +27,7 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    auth:state.auth
+    auth: state.auth
   }
 }
 
