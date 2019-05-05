@@ -31,7 +31,7 @@ class Header extends Component {
                                 <NavLink tag={Link} to="/" >Home</NavLink>
                             </NavItem>
                             {
-                                this.props.roleId === 2 && 
+                                this.props.roleId < 3 && 
                                 <> <NavItem>
                                     <NavLink tag={Link} to="/dept" >Departments</NavLink>
                                 </NavItem>
@@ -46,7 +46,7 @@ class Header extends Component {
                                 </>
                             }
                             <NavItem onClick={this.handleLogout}>
-                                <NavLink>Logout</NavLink>
+                                <NavLink tag={Link}>Logout</NavLink>
                             </NavItem>
                         </Nav>
                     </Collapse>

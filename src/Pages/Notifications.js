@@ -87,7 +87,7 @@ class Notifications extends Component {
                                 <th>#</th>
                                 <th>Title</th>
                                 <th>Body</th>
-                                <th></th>
+                                { this.props.roleId === 1 && <th></th> }
                             </tr>
                         </thead>
                         <tbody>
@@ -97,11 +97,15 @@ class Notifications extends Component {
                                         <td>{index + 1}</td>
                                         <td>{each.title}</td>
                                         <td>{each.description}</td>
-                                        <td style={{ textAlign: 'right' }}>
-                                            <Button
-                                                onClick={() => this.deleteNotification(each._id)}
-                                                variant="outline-success">Delete</Button>
-                                        </td>
+                                        {
+                                            this.props.roleId === 1 &&
+                                                <td style={{ textAlign: 'right' }}>
+                                                    <Button
+                                                        onClick={() => this.deleteNotification(each._id)}
+                                                        variant="outline-success">Delete</Button>
+                                                </td>
+                                        }
+                                        
                                     </tr>
                                 )
                             })}
@@ -113,7 +117,7 @@ class Notifications extends Component {
                     </div>
                 }
                 {
-                    this.props.roleId === 2 &&<Button
+                    this.props.roleId === 1 &&<Button
                         color="primary"
                         onClick={() => this.setState({ showNotificationModal: true })}>
                         Send College Notification

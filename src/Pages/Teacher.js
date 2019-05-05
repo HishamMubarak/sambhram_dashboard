@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Container, Row, Col, Table, Button } from 'reactstrap';
 import axios from 'axios'
 import CustomModal from '../Components/CustomModal'
+import { connect } from 'react-redux'
 
 const initialState = {
     showAddTeacherForm: false,
@@ -17,13 +18,28 @@ class Teacher extends Component {
         this.getTeachers()
     }
 
+    validateEmail(email) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
     handleInputChange = (e) => {
         this.setState({ [e.target.name]: e.target.value })
     }
 
     fetchDepartments() {
         axios.get('/department')
-            .then(res => { this.setState({ departments: res.data }) })
+            .then(res => {
+                let departments = res.data
+
+                if(this.props.roleId !== 1) {
+                    departments = res.data.filter(each => {
+                        return each._id === this.props.departmentId
+                    })
+                }
+
+                this.setState({ departments })
+            })
             .catch(err => console.log(err))
     }
 
@@ -37,6 +53,11 @@ class Teacher extends Component {
 
     addTeacher() {
         const { teacherName, teacherEmail, teacherPassword, teacherDepartment } = this.state
+        
+        if(!this.validateEmail(teacherEmail)) {
+            return alert("Enter valid email")
+        }
+        
         if (teacherName && teacherEmail && teacherPassword && teacherDepartment && teacherDepartment !== '1') {
             axios.put('/teacher', { name: teacherName, email:teacherEmail, password:teacherPassword, department: teacherDepartment })
                 .then(res => {
@@ -51,8 +72,13 @@ class Teacher extends Component {
 
     editTeacher() {
         const { teacherId, teacherName, teacherEmail, teacherDepartment } = this.state
+
+        if(!this.validateEmail(teacherEmail)) {
+            return alert("Enter valid email")
+        }
+
         if (teacherId && teacherName && teacherEmail && teacherDepartment && teacherDepartment !== '1') {
-            axios.post(`/teacher/${teacherId}`, { name: teacherName, teacherEmail:teacherEmail, department: teacherDepartment })
+            axios.post(`/teacher/${teacherId}`, { name: teacherName, email:teacherEmail, department: teacherDepartment })
                 .then(res => {
                     this.setState({ ...initialState })
                     this.getTeachers()
@@ -183,4 +209,12 @@ class Teacher extends Component {
     }
 }
 
-export default Teacher
+
+const mapStateToProps = state => {
+    return {
+        departmentId:state.auth.department,
+        roleId:state.auth.roleId
+    }
+}
+
+export default connect(mapStateToProps)(Teacher)

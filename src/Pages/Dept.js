@@ -3,6 +3,7 @@ import axios from 'axios'
 import { Container, Row, Col, Collapse, Card, Table, Button } from 'reactstrap';
 import CustomModal from '../Components/CustomModal'
 import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
 
 const initialState = {
     deptId: null,
@@ -25,7 +26,15 @@ class Department extends Component {
     fetchDepartments() {
         axios.get('/department')
             .then(res => {
-                this.setState({ departments: res.data })
+                let departments = res.data
+                
+                if(this.props.roleId !== 1) {
+                    departments = res.data.filter(each => {
+                        return each._id === this.props.departmentId
+                    })
+                }
+                
+                this.setState({ departments })
             })
             .catch(err => console.log(err))
     }
@@ -238,15 +247,26 @@ class Department extends Component {
                         }
                     </Row>
 
-                    <Row>
-                        <Col style={{ padding: 20 }}>
-                            <Button block color="primary" onClick={() => this.setState({ showAddDeptForm: true })}>Add New Department</Button>
-                        </Col>
-                    </Row>
+                    {
+                        this.props.roleId === 1 &&
+                            <Row>
+                                <Col style={{ padding: 20 }}>
+                                    <Button block color="primary" onClick={() => this.setState({ showAddDeptForm: true })}>Add New Department</Button>
+                                </Col>
+                            </Row>
+                    }
+                    
                 </Container>
             </div>
         )
     }
 }
 
-export default Department
+const mapStateToProps = state => {
+    return {
+        departmentId:state.auth.department,
+        roleId:state.auth.roleId
+    }
+}
+
+export default connect(mapStateToProps)(Department)
