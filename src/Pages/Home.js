@@ -146,7 +146,7 @@ class Home extends Component {
                         <React.Fragment>
                             <Row>
                                 <Col>
-                                    <h2 style={{ textAlign: 'center' }}>{this.state.department[0].name}</h2>
+                                    {/* <h2 style={{ textAlign: 'center' }}>{this.state.department[0].name}</h2> */}
                                     <Button style={{ margin: 10 }} color="primary" onClick={() => this.setState({ showNotificationModal: true, departmentId: this.state.department[0]._id })}>Send Department Notification</Button>
                                 </Col>
                             </Row>
@@ -165,7 +165,6 @@ class Home extends Component {
                                                             </Col>
                                                             <Col sm="6">
                                                                 <Button style={{ margin: 10 }} color="primary" onClick={() => this.setState({ courseId: each.courses._id, showAddBatchModal: true })}>Add New Batch</Button>
-
                                                             </Col>
                                                         </Row>
                                                     </Col>

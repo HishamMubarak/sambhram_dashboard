@@ -96,7 +96,9 @@ class Student extends Component {
 
     editStudentDetails() {
         const { studentId, studentName, mobile, mail, address, registerNumber } = this.state
-        if(studentId && studentName && mobile && mail && address && registerNumber) {
+        if (mobile && mobile.length !== 10) {
+            alert("Enter 10 digit mobile number")
+        } else if(studentId && studentName && mobile && mail && address && registerNumber) {
             axios.post(`/student/${studentId}`, { name:studentName, mobile, mail, address, registerNumber })
             .then(res => {
                 this.fetchStudentDetails(this.props.match.params.studentId)
@@ -135,7 +137,7 @@ class Student extends Component {
                         fields={
                             [
                                 { fieldName: "studentName", value: this.state.studentName, placeholder: "Student Name" },
-                                { fieldName: "mobile", value: this.state.mobile, placeholder: "Mobile" },
+                                { fieldName: "mobile", value: this.state.mobile, placeholder: "Mobile", type:"number" },
                                 { fieldName: "mail", value: this.state.mail, placeholder: "E-Mail" },
                                 { fieldName: "address", value: this.state.address, placeholder: "Address" },
                                 { fieldName: "registerNumber", value: this.state.registerNumber, placeholder: "Register Number" }

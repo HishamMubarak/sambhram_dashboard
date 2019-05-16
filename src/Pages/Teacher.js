@@ -44,7 +44,7 @@ class Teacher extends Component {
     }
 
     getTeachers() {
-        axios.get('/teacher')
+        axios.get('/teacher', { params: { departmentId:this.props.departmentId, roleId:this.props.roleId }})
             .then(res => {
                 this.setState({ teachers: res.data, ...initialState })
             })

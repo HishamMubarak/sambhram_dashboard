@@ -50,7 +50,9 @@ class Batch extends Component {
 
     addStudent() {
         const { studentName, mobile, mail, address, registerNumber } = this.state
-        if (studentName && mobile && mail && address && registerNumber) {
+        if (mobile && mobile.length !== 10) {
+            alert("Enter 10 digit mobile number")
+        } else if (studentName && mobile && mail && address && registerNumber) {
 
             const department = this.state.batchData.department[0]._id
             const course = this.state.batchData.course[0]._id
@@ -84,7 +86,7 @@ class Batch extends Component {
                         fields={
                             [
                                 { fieldName: "studentName", value: this.state.studentName, placeholder: "Student Name" },
-                                { fieldName: "mobile", value: this.state.mobile, placeholder: "Mobile" },
+                                { fieldName: "mobile", value: this.state.mobile, placeholder: "Mobile", type:"number" },
                                 { fieldName: "mail", value: this.state.mail, placeholder: "E-Mail" },
                                 { fieldName: "address", value: this.state.address, placeholder: "Address" },
                                 { fieldName: "registerNumber", value: this.state.registerNumber, placeholder: "Register Number" }

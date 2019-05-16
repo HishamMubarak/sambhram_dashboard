@@ -46,7 +46,7 @@ class Header extends Component {
                                 </>
                             }
                             <NavItem onClick={this.handleLogout}>
-                                <NavLink tag={Link}>Logout</NavLink>
+                                <NavLink tag={Link}  to="/">Logout</NavLink>
                             </NavItem>
                         </Nav>
                     </Collapse>
