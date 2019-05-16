@@ -46,11 +46,9 @@ class Home extends Component {
     }
 
     fetchCourses() {
-        axios.get(`/department/${this.props.auth.department}`)
-            .then(res => {
-                this.setState({ department: res.data })
-            })
-            .catch(err => console.log(err))
+        axios.get(`/department/${this.props.auth.department}`, { params:{ roleId:this.props.auth.roleId }})
+        .then(res => { this.setState({ department: res.data }) })
+        .catch(err => console.log(err))
     }
 
     handleInputChange = (e) => {

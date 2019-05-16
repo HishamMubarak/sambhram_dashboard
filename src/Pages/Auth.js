@@ -31,7 +31,13 @@ class Auth extends Component {
         if (email && password) {
             axios.post('/teacher/login', { email, password })
                 .then(res => { this.props.login(res.data) })
-                .catch(err => console.log(err))
+                .catch(err =>{
+                    if(err.response && err.response.status === 400) {
+                        alert("Invalid email or password.\nPlease check and try again")
+                    } else {
+                        console.log(err)
+                    }
+                })
         } else {
             this.setState({ showEnterAllDataAlert: true }, () => {
                 setTimeout(() => {

@@ -165,7 +165,11 @@ class Teacher extends Component {
                 <Container>
                     <Row>
                         <Col style={{ padding: 20 }}>
-                            <Button color="primary" onClick={() => this.setState({ showAddTeacherForm: true })}>Add New Teacher</Button>
+                            <Button color="primary" onClick={() => this.setState({
+                                teacherName:'',
+                                teacherEmail:'',
+                                teacherPassword:'',
+                                showAddTeacherForm: true })}>Add New Teacher</Button>
                         </Col>
                     </Row>
                     <Row>
